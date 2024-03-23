@@ -14,7 +14,7 @@
         <VCol cols="auto">
           <VBtn
             color="primary"
-            href="https://vuetifyjs.com/introduction/why-vuetify/#feature-guides"
+            href="https://github.com/rinaldo-256int/Weather-Station-Project/tree/master"
             min-width="228"
             rel="noopener noreferrer"
             size="x-large"

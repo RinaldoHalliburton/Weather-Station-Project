@@ -1,5 +1,24 @@
 <template>
   <v-container align="center">
+    <v-row>
+      <v-col align="center">
+        <v-card
+          class="mb-5"
+          style="max-width: 500px"
+          color="white"
+          title="TIME & DATE"
+        >
+          <v-card-item>
+            <span>
+              {{ currentDate }}
+            </span>
+            <span class="text-onContainer text-h3">
+              {{ time }}
+            </span>
+          </v-card-item>
+        </v-card>
+      </v-col>
+    </v-row>
     <v-row class="row">
       <v-col>
         <v-card
@@ -9,7 +28,7 @@
           subtitle="Temperature"
         >
           <v-card-item>
-            <span class="text-onPrimaryContainer text-h3">
+            <span class="text-onContainer text-h3">
               {{ temperature }}
             </span>
           </v-card-item>
@@ -21,7 +40,7 @@
           subtitle="Humidity"
         >
           <v-card-item>
-            <span class="text-onTertiaryContainer text-h3">
+            <span class="text-onContainer text-h3">
               {{ humidity }}
             </span>
           </v-card-item>
@@ -33,7 +52,7 @@
           subtitle="Heat Index"
         >
           <v-card-item>
-            <span class="text-onSecondaryContainer text-h3">
+            <span class="text-onContainer text-h3">
               {{ heatindex }}
             </span>
           </v-card-item>
@@ -47,7 +66,7 @@
           subtitle="Pressure"
         >
           <v-card-item>
-            <span class="text-onPrimaryContainer text-h3">
+            <span class="text-onContainer text-h3">
               {{ pressure }}
             </span>
           </v-card-item>
@@ -83,7 +102,7 @@
         <v-btn text class="mr-2" color="grey" @click="toggleNormal"
           >SI Units</v-btn
         >
-        <v-btn color="grey" @click="toggleAmerican">American</v-btn>
+        <v-btn color="grey" @click="toggleAmerican">Imperial</v-btn>
       </v-col>
     </v-row>
 
@@ -133,14 +152,19 @@ const Chart = ref(null); // Chart object
 
 const points = ref(15); // Specify the quantity of points to be shown on the live graph simultaneously.
 const shift = ref(false); // Delete a point from the left side and append a new point to the right side of the graph.
-var american = false;
+var imperial = false;
 var normal = true;
+const time = ref(new Date().toLocaleTimeString());
+const currentDate = ref(new Date().toLocaleDateString());
+
 // FUNCTIONS
 
 onMounted(() => {
   // THIS FUNCTION IS CALLED AFTER THIS COMPONENT HAS BEEN MOUNTED
   // CreateCharts();
   CreateChart();
+  setInterval(updateTime, 1000);
+  setUpdateTimeout();
 
   Mqtt.connect(); // Connect to Broker located on the backend
   setTimeout(() => {
@@ -157,12 +181,29 @@ onBeforeUnmount(() => {
 });
 
 const toggleAmerican = async () => {
-  american = true;
+  imperial = true;
   normal = false;
 };
 const toggleNormal = async () => {
-  american = false;
+  imperial = false;
   normal = true;
+};
+
+const updateTime = () => {
+  time.value = new Date().toLocaleTimeString();
+};
+
+const updateDate = () => {
+  currentDate.value = new Date().toLocaleDateString();
+  // Set the next update for just after midnight
+  setUpdateTimeout();
+};
+const setUpdateTimeout = () => {
+  const now = new Date();
+  // Calculate time until midnight
+  const timeUntilMidnight =
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now;
+  setTimeout(updateDate, timeUntilMidnight);
 };
 
 const CreateChart = async () => {
@@ -234,20 +275,20 @@ const CreateChart = async () => {
 // COMPUTED PROPERTIES
 const temperature = computed(() => {
   if (!!payload.value) {
-    if (american == false && normal == true) {
+    if (imperial == false && normal == true) {
       return `${payload.value.temperature.toFixed(2)} °C`;
     }
-    if (american == true && normal == false) {
+    if (imperial == true && normal == false) {
       return `${(payload.value.temperature * 1.8 + 32).toFixed(2)} °F`;
     }
   }
 });
 const heatindex = computed(() => {
   if (!!payload.value) {
-    if (american == false && normal == true) {
+    if (imperial == false && normal == true) {
       return `${payload.value.heatindex.toFixed(2)} °C`;
     }
-    if (american == true && normal == false) {
+    if (imperial == true && normal == false) {
       return `${(payload.value.heatindex * 1.8 + 32).toFixed(2)} °F`;
     }
   }
@@ -259,10 +300,10 @@ const humidity = computed(() => {
 });
 const pressure = computed(() => {
   if (!!payload.value) {
-    if (american == false && normal == true) {
+    if (imperial == false && normal == true) {
       return `${payload.value.pressure.toFixed(2)} kPa`;
     }
-    if (american == true && normal == false) {
+    if (imperial == true && normal == false) {
       return `${(payload.value.pressure / 3.386).toFixed(2)} Hg`;
     }
   }
@@ -274,10 +315,10 @@ const soilmoisture = computed(() => {
 });
 const altitude = computed(() => {
   if (!!payload.value) {
-    if (american == false && normal == true) {
+    if (imperial == false && normal == true) {
       return `${payload.value.altitude.toFixed(2)} m`;
     }
-    if (american == true && normal == false) {
+    if (imperial == true && normal == false) {
       return `${(payload.value.altitude * 1.094).toFixed(2)} yd`;
     }
   }
@@ -290,7 +331,7 @@ watch(payload, (data) => {
   } else {
     shift.value = true;
   }
-  if (american == false && normal == true) {
+  if (imperial == false && normal == true) {
     Chart.value.series[0].addPoint(
       { y: parseFloat(data.temperature.toFixed(2)), x: data.timestamp * 1000 },
       true,
@@ -312,7 +353,7 @@ watch(payload, (data) => {
       shift.value
     );
   }
-  if (american == true && normal == false) {
+  if (imperial == true && normal == false) {
     Chart.value.series[0].addPoint(
       {
         y: parseFloat((data.temperature * 1.8 + 32).toFixed(2)),
