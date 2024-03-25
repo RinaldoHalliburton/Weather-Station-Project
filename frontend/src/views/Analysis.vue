@@ -163,14 +163,13 @@ const CreateCharts = async () => {
     },
 
     tooltip: {
-      pointFormat:
-        "Heatindex: {point.x} °C <br/> Temperature: {point.y} °C <br/> Humidity: {point.y} %",
+      shared: true,
     },
+
     xAxis: {
       type: "datetime",
       title: { text: "Time", style: { color: "#000000" } },
     },
-    tooltip: { shared: true },
     colors: ["red", "blue", "green"],
     series: [
       {
@@ -208,17 +207,15 @@ const CreateCharts = async () => {
         text: "Altitude",
         style: { color: "#000000" },
       },
-      labels: { format: "{value} m or yd" },
+      labels: { format: "{value}" },
     },
 
     xAxis: {
       title: { text: "Pressure", style: { color: "#000000" } },
-      labels: { format: "{value} kPa or Hg" },
+      labels: { format: "{value}" },
     },
     tooltip: {
       shared: true,
-      pointFormat:
-        "Altitude: {point.y} m or yd <br/> Pressure: {point.x} kPa or Hg",
     },
     series: [
       {

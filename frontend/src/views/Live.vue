@@ -28,7 +28,7 @@
           subtitle="Temperature"
         >
           <v-card-item>
-            <span class="text-onContainer text-h3">
+            <span class="text-onPrimaryContainer text-h3">
               {{ temperature }}
             </span>
           </v-card-item>
@@ -40,7 +40,7 @@
           subtitle="Humidity"
         >
           <v-card-item>
-            <span class="text-onContainer text-h3">
+            <span class="text-onPrimaryContainer text-h3">
               {{ humidity }}
             </span>
           </v-card-item>
@@ -52,7 +52,7 @@
           subtitle="Heat Index"
         >
           <v-card-item>
-            <span class="text-onContainer text-h3">
+            <span class="text-onPrimaryContainer text-h3">
               {{ heatindex }}
             </span>
           </v-card-item>
@@ -78,7 +78,7 @@
           subtitle="Soil Moisture"
         >
           <v-card-item>
-            <span class="text-onTertiaryContainer text-h3">
+            <span class="text-onPrimaryContainer text-h3">
               {{ soilmoisture }}
             </span>
           </v-card-item>
@@ -90,7 +90,7 @@
           subtitle="Altitude"
         >
           <v-card-item>
-            <span class="text-onSecondaryContainer text-h3">
+            <span class="text-onPrimaryContainer text-h3">
               {{ altitude }}
             </span>
           </v-card-item>
@@ -156,12 +156,13 @@ var imperial = false;
 var normal = true;
 const time = ref(new Date().toLocaleTimeString());
 const currentDate = ref(new Date().toLocaleDateString());
+var refreshTimer = ref(null);
 
 // FUNCTIONS
 
 onMounted(() => {
   // THIS FUNCTION IS CALLED AFTER THIS COMPONENT HAS BEEN MOUNTED
-  // CreateCharts();
+  refreshTimer = setInterval(refreshData, 60000);
   CreateChart();
   setInterval(updateTime, 1000);
   setUpdateTimeout();
@@ -177,8 +178,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // THIS FUNCTION IS CALLED RIGHT BEFORE THIS COMPONENT IS UNMOUNTED
   // unsubscribe from all topics
+  clearInterval(refreshTimer);
   Mqtt.unsubcribeAll();
 });
+
+const refreshData = async () => {
+  console.log("Refreshing data...");
+  window.location.reload();
+};
 
 const toggleAmerican = async () => {
   imperial = true;

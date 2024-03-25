@@ -45,11 +45,11 @@ static const char* mqtt_server = "broker.hivemq.com";          // Broker IP addr
 static uint16_t mqtt_port = 1883;
 
 // WIFI CREDENTIALS
-const char* ssid = "CWC-9128576";   // Add your Wi-Fi ssid
-const char* password = "sb3Rkgqzxtcy";  // Add your Wi-Fi password
+//const char* ssid = "CWC-9128576";   // Add your Wi-Fi ssid
+//const char* password = "sb3Rkgqzxtcy";  // Add your Wi-Fi password
 
-//const char* ssid = "MonaConnect";   // Add your Wi-Fi ssid
-//const char* password = "";  // Add your Wi-Fi password
+const char* ssid = "MonaConnect";   // Add your Wi-Fi ssid
+const char* password = "";  // Add your Wi-Fi password
 
 // FUNCTION DECLARATION
 void checkHEAP(const char* Name);  // RETURN REMAINING HEAP SIZE FOR A TASK
